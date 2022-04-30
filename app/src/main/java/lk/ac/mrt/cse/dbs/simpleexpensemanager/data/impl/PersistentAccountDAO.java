@@ -79,13 +79,13 @@ public class PersistentAccountDAO   implements AccountDAO {
             double balance = cursor.getDouble(3);
             account=new Account(accountNo, bankName, accountHolderName, balance);
         }else {
-            sqLiteDatabase.close();
             cursor.close();
+            sqLiteDatabase.close();
             String msg = "Account " + accountNo + " is invalid.";
             throw new InvalidAccountException(msg);
         }
-        sqLiteDatabase.close();
         cursor.close();
+        sqLiteDatabase.close();
         return account;
     }
 
