@@ -16,14 +16,55 @@
 
 package lk.ac.mrt.cse.dbs.simpleexpensemanager;
 
-import android.app.Application;
-import android.test.ApplicationTestCase;
+import android.content.Context;
+
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import lk.ac.mrt.cse.dbs.simpleexpensemanager.control.ExpenseManager;
+import lk.ac.mrt.cse.dbs.simpleexpensemanager.control.PersistentExpenseManager;
+import lk.ac.mrt.cse.dbs.simpleexpensemanager.control.exception.ExpenseManagerException;
+import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.exception.InvalidAccountException;
+import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.model.ExpenseType;
 
 /**
  * <a href="http://d.android.com/tools/testing/testing_android.html">Testing Fundamentals</a>
  */
-public class ApplicationTest extends ApplicationTestCase<Application> {
-    public ApplicationTest() {
-        super(Application.class);
+public class ApplicationTest {
+    private static ExpenseManager expenseManager;
+
+
+    @BeforeClass
+    public static void createExpenseManager(){
+        Context context = ApplicationProvider.getApplicationContext();
+        try {
+            expenseManager = new PersistentExpenseManager(context);
+        } catch (ExpenseManagerException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void addAccountTest (){
+        expenseManager.addAccount("0012A","AAA","KK",1000);
+        assertTrue(expenseManager.getAccountNumbersList().contains("0012A"));
+    }
+
+    @Test
+    public void addTransactionTest(){
+        int noOfTransactions = expenseManager.getTransactionLogs().size();
+        try {
+            expenseManager.updateAccountBalance("0012A", 15, 10, 2022, ExpenseType.EXPENSE, "20.0");
+            assertEquals(noOfTransactions +1,expenseManager.getTransactionLogs().size());
+        } catch (InvalidAccountException e) {
+            e.printStackTrace();
+        }
     }
 }
